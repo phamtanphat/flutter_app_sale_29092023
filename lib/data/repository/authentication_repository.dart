@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_app_sale_29092023/data/api/api_service.dart';
 import 'package:flutter_app_sale_29092023/data/api/dto/app_response_dto.dart';
 import 'package:flutter_app_sale_29092023/data/api/dto/user_dto.dart';
@@ -9,20 +11,21 @@ class AuthenticationRepository {
     _apiService = apiService;
   }
 
-  Future<UserDTO> executeGetWeatherFromCity(String cityName) {
-    Completer<SearchWeatherFromCityDTO> completer = Completer();
+  Future<UserDTO> executeSignInService(String email, String password) {
+    Completer<UserDTO> completer = Completer();
     _apiService
-        ?.requestWeatherFromCity(cityName)
+        ?.requestSignIn(email, password)
         .then((dataResponse) {
-      if (dataResponse.data == null || dataResponse.data == "") {
-        completer.complete(SearchWeatherFromCityDTO());
-      } else {
-        completer.complete(SearchWeatherFromCityDTO.fromJson(dataResponse.data));
-      }
-    })
+          if (dataResponse.data == null || dataResponse.data == "") {
+            completer.complete(UserDTO());
+          } else {
+            var appResponseUserDTO = AppResponseDTO<UserDTO>.fromJSON(dataResponse.data, UserDTO.fromJson);
+            completer.complete(appResponseUserDTO.data);
+          }
+        })
         .catchError((error) {
-      completer.completeError(error.response?.data["message"] ?? error.toString());
-    });
+          completer.completeError(error.response?.data["message"] ?? error.toString());
+        });
 
     return completer.future;
   }
