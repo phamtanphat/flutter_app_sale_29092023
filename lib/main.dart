@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_sale_29092023/presentation/sign_in/sign_in_page.dart';
 import 'package:flutter_app_sale_29092023/presentation/sign_up/sign_up_page.dart';
+import 'package:flutter_app_sale_29092023/presentation/splash/splash_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,8 +20,10 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: "/sign-in",
       routes: {
+        "/splash": (context) => SplashPage(),
         "/sign-in": (context) => SignInPage(),
-        "/sign-up": (context) => SignUpPage()
+        "/sign-up": (context) => SignUpPage(),
+        "/product": (context) => SignUpPage(),
       },
     );
   }

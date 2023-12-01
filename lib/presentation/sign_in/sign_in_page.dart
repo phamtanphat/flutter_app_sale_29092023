@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_app_sale_29092023/common/app_constant.dart';
 import 'package:flutter_app_sale_29092023/common/base/base_widget.dart';
 import 'package:flutter_app_sale_29092023/common/widget/loading_widget.dart';
+import 'package:flutter_app_sale_29092023/common/widget/progress_listener_widget.dart';
 import 'package:flutter_app_sale_29092023/data/api/api_service.dart';
 import 'package:flutter_app_sale_29092023/data/repository/authentication_repository.dart';
 import 'package:flutter_app_sale_29092023/presentation/sign_in/sign_in_bloc.dart';
@@ -138,6 +139,13 @@ class _SignInContainerState extends State<SignInContainer> {
                 ),
               ),
               LoadingWidget(bloc: _bloc),
+              ProgressListenerWidget<SignInBloc>(
+                  callback: (event) {
+                    if (event is SignInSuccessEvent) {
+                      Navigator.pushReplacementNamed(context, "/product");
+                    }
+                  }
+              ),
             ]
         )
     );

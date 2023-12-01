@@ -1,5 +1,7 @@
+import 'package:flutter_app_sale_29092023/common/app_constant.dart';
 import 'package:flutter_app_sale_29092023/common/base/base_bloc.dart';
 import 'package:flutter_app_sale_29092023/common/base/base_event.dart';
+import 'package:flutter_app_sale_29092023/data/local/app_share_preference.dart';
 import 'package:flutter_app_sale_29092023/data/model/user.dart';
 import 'package:flutter_app_sale_29092023/data/repository/authentication_repository.dart';
 import 'package:flutter_app_sale_29092023/presentation/sign_in/sign_in_event.dart';
@@ -28,6 +30,8 @@ class SignInBloc extends BaseBloc {
             User user = UserParser.parseUserDTO(userDTO);
             if (user.token.isNotEmpty) {
               messageSink.add("Login success");
+              progressSink.add(SignInSuccessEvent());
+              AppSharePreference.setString(key: AppConstant.TOKEN_KEY, value: user.token);
             }
         })
         .catchError((error) { messageSink.add(error); })

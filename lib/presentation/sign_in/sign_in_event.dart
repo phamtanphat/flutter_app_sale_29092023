@@ -9,3 +9,12 @@ class SignInEvent extends BaseEvent {
   List<Object?> get props => [];
 
 }
+
+class SignInSuccessEvent extends BaseEvent {
+
+  SignInSuccessEvent();
+
+  @override
+  List<Object?> get props => [];
+
+}
