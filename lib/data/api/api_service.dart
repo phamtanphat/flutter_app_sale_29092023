@@ -10,4 +10,20 @@ class ApiService {
       "password": password,
     });
   }
+
+  Future<Response<dynamic>> requestSignUp(
+      String email,
+      String password,
+      String name,
+      String phone,
+      String address
+    ) {
+    return _dio.post("user/sign-up", data: {
+      "email": email,
+      "password": password,
+      "name": name,
+      "phone": phone,
+      "address": address,
+    });
+  }
 }

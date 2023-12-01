@@ -29,4 +29,29 @@ class AuthenticationRepository {
 
     return completer.future;
   }
+
+  Future<UserDTO> executeSignUpService(
+      String email,
+      String password,
+      String name,
+      String phone,
+      String address,
+  ) {
+    Completer<UserDTO> completer = Completer();
+    _apiService
+        ?.requestSignUp(email, password, name, phone, address)
+        .then((dataResponse) {
+          if (dataResponse.data == null || dataResponse.data == "") {
+            completer.complete(UserDTO());
+          } else {
+            var appResponseUserDTO = AppResponseDTO<UserDTO>.fromJSON(dataResponse.data, UserDTO.fromJson);
+            completer.complete(appResponseUserDTO.data);
+          }
+        })
+        .catchError((error) {
+          completer.completeError(error.response?.data["message"] ?? error.toString());
+        });
+
+    return completer.future;
+  }
 }
