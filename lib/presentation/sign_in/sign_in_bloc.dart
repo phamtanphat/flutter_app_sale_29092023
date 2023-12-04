@@ -29,7 +29,6 @@ class SignInBloc extends BaseBloc {
         .then((userDTO) {
             User user = UserParser.parseUserDTO(userDTO);
             if (user.token.isNotEmpty) {
-              messageSink.add("Login success");
               progressSink.add(SignInSuccessEvent());
               AppSharePreference.setString(key: AppConstant.TOKEN_KEY, value: user.token);
             }
