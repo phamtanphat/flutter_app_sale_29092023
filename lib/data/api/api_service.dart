@@ -26,4 +26,8 @@ class ApiService {
       "address": address,
     });
   }
+
+  Future<Response<dynamic>> requestListProduct() {
+    return _dio.get("product");
+  }
 }
