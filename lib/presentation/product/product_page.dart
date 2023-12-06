@@ -1,11 +1,15 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_sale_29092023/common/app_constant.dart';
 import 'package:flutter_app_sale_29092023/common/base/base_widget.dart';
 import 'package:flutter_app_sale_29092023/common/widget/loading_widget.dart';
 import 'package:flutter_app_sale_29092023/data/api/api_service.dart';
+import 'package:flutter_app_sale_29092023/data/model/cart.dart';
 import 'package:flutter_app_sale_29092023/data/model/product.dart';
+import 'package:flutter_app_sale_29092023/data/repository/cart_repository.dart';
 import 'package:flutter_app_sale_29092023/data/repository/product_repository.dart';
 import 'package:flutter_app_sale_29092023/presentation/product/product_bloc.dart';
+import 'package:flutter_app_sale_29092023/presentation/product/product_event.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -36,17 +40,71 @@ class _ProductPageState extends State<ProductPage> {
             return repository;
           },
         ),
-        ProxyProvider<ProductRepository, ProductBloc>(
+        ProxyProvider<ApiService, CartRepository>(
+          create: (context) => CartRepository(),
+          update: (_, request, repository) {
+            repository ??= CartRepository();
+            repository.setApiService(request);
+            return repository;
+          },
+        ),
+        ProxyProvider2<ProductRepository, CartRepository, ProductBloc>(
           create: (context) => ProductBloc(),
-          update: (_, productRepo, bloc) {
+          update: (_, productRepo, cartRepo, bloc) {
             bloc?.setProductRepo(productRepo);
+            bloc?.setCartRepo(cartRepo);
             return bloc ?? ProductBloc();
           },
         )
       ],
       child: ProductContainer(),
       appBar: AppBar(
-        title: Text("Product"),
+        title: const Text("Products"),
+        leading: IconButton(
+          icon: Icon(Icons.logout),
+          onPressed: () {},
+        ),
+        actions: [
+          Center(
+            child: Container(
+                margin: EdgeInsets.only(right: 10),
+                child: Icon(Icons.history)),
+          )
+          ,
+          SizedBox(width: 10),
+          Center(
+            child: Consumer<ProductBloc>(
+              builder: (context, bloc, child){
+                return StreamBuilder<Cart>(
+                    initialData: null,
+                    stream: bloc.getCartStream(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError || snapshot.data == null || snapshot.data?.listProduct.isEmpty == true) {
+                        return InkWell(
+                          child: Container(
+                              margin: EdgeInsets.only(right: 10),
+                              child: Icon(Icons.shopping_cart_outlined)
+                          ),
+                        );
+                      }
+                      int count = 0;
+                      snapshot.data?.listProduct.forEach((element) {
+                        count += element.quantity.toInt();
+                      });
+                      return Container(
+                        margin: EdgeInsets.only(right: 10),
+                        child: Badge(
+                          badgeContent: Text(count.toString(), style: const TextStyle(color: Colors.white),),
+                          child: Icon(Icons.shopping_cart_outlined),
+                        ),
+                      );
+                    }
+                );
+              },
+            ),
+          ),
+          SizedBox(width: 10),
+        ],
       ),
     );
   }
@@ -87,7 +145,10 @@ class _ProductContainerState extends State<ProductContainer> {
                 return ListView.builder(
                     itemCount: snapshot.data?.length ?? 0,
                     itemBuilder: (context, index) {
-                      return _buildItemFood(snapshot.data?[index], null);
+                      var itemProduct = snapshot.data?[index];
+                      return _buildItemFood(itemProduct, () {
+                        _bloc?.eventSink.add(AddToCartEvent(itemProduct?.id ?? ""));
+                      });
                     }
                 );
               }

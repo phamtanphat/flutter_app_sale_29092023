@@ -30,4 +30,10 @@ class ApiService {
   Future<Response<dynamic>> requestListProduct() {
     return _dio.get("product");
   }
+
+  Future<Response<dynamic>> requestAddToCart(String idProduct) {
+    return _dio.post("cart/add", data: {
+      "id_product": idProduct,
+    });
+  }
 }
